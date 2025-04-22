@@ -35,13 +35,13 @@
       margin: 0 auto 1rem;
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
+      align-items: flex-end;
       flex-wrap: wrap;
     }
     .controls {
       display: flex;
       gap: 0.75rem;
-      align-items: center;
+      align-items: flex-end;
     }
     button, label span {
       background: #42B4AD;
@@ -57,6 +57,7 @@
       display: inline-flex;
       align-items: center;
       gap: 0.4rem;
+      height: 40px;
     }
     .material-symbols-outlined {
       font-size: 18px;
@@ -112,7 +113,7 @@
       <h2>Ton assistant de feed</h2>
     </div>
     <div class="controls">
-      <label><input id="fileInput" type="file" accept="image/*" multiple><span><span class="material-symbols-outlined">upload</span>Ajouter des images</span></label>
+      <label><input id="fileInput" type="file" accept="image/*" multiple><span><span class="material-symbols-outlined">image</span>Ajouter des images</span></label>
       <button onclick="exportLayout()"><span class="material-symbols-outlined">download</span>Exporter le layout</button>
     </div>
   </div>
