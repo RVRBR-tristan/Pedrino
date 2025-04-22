@@ -194,6 +194,31 @@ label.export-btn input {
   display: none;
 }
 
+
+    .export-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 40px;
+      padding: 0.5rem 1rem;
+      font-size: 15px;
+      font-weight: 500;
+      border-radius: 8px;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      cursor: pointer;
+      gap: 0.5rem;
+      transition: background-color 0.25s ease-in-out;
+    }
+    .export-btn:hover {
+      background-color: var(--primary-hover);
+    }
+    .material-symbols-outlined {
+      font-size: 20px;
+      vertical-align: middle;
+    }
+
 </style>
 </head>
 <body>
@@ -203,9 +228,13 @@ label.export-btn input {
       <h2>Salut ! je t'aide à prévisualiser ton feed Insta ^^</h2>
     </div>
     
-    <div class="controls">
-      <label class="export-btn">
-        <input id="fileInput" type="file" accept="image/*" multiple>
+    
+  <div class="controls">
+    <button id="addImagesBtn" class="export-btn"><span class="material-symbols-outlined">image</span> Ajouter des images</button>
+    <button onclick="exportGrid()" class="export-btn"><span class="material-symbols-outlined">download</span> Exporter le layout</button>
+  </div>
+  <input id="fileInput" type="file" accept="image/*" multiple style="display: none;">
+
         <span><span class="material-symbols-outlined">image</span> Ajouter des images</span>
       </label>
       <button onclick="exportGrid()" class="export-btn">
@@ -247,6 +276,16 @@ label.export-btn input {
                 images[i] = reader.result;
                 render();
 
+document.getElementById('addImagesBtn').addEventListener('click', () => {
+  document.getElementById('fileInput').click();
+});
+
+
+document.getElementById('addImagesBtn').addEventListener('click', () => {
+  document.getElementById('fileInput').click();
+});
+
+
 
 
               };
@@ -265,6 +304,16 @@ label.export-btn input {
           const [moved] = images.splice(evt.oldIndex, 1);
           images.splice(evt.newIndex, 0, moved);
           render();
+
+document.getElementById('addImagesBtn').addEventListener('click', () => {
+  document.getElementById('fileInput').click();
+});
+
+
+document.getElementById('addImagesBtn').addEventListener('click', () => {
+  document.getElementById('fileInput').click();
+});
+
 
 
 
@@ -311,6 +360,16 @@ label.export-btn input {
             images[idx] = reader.result;
             render();
 
+document.getElementById('addImagesBtn').addEventListener('click', () => {
+  document.getElementById('fileInput').click();
+});
+
+
+document.getElementById('addImagesBtn').addEventListener('click', () => {
+  document.getElementById('fileInput').click();
+});
+
+
 
 
           }
@@ -320,6 +379,16 @@ label.export-btn input {
     });
 
     render();
+
+document.getElementById('addImagesBtn').addEventListener('click', () => {
+  document.getElementById('fileInput').click();
+});
+
+
+document.getElementById('addImagesBtn').addEventListener('click', () => {
+  document.getElementById('fileInput').click();
+});
+
 
 
 
