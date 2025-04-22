@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pedriño – Instagram Feed Preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'IBM Plex Mono', monospace;
+      background-color: #f5f5f5;
+      color: #111;
+      padding: 2rem;
+    }
+    h1 {
+      text-align: center;
+      font-size: 1.8rem;
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    button, label {
+      background: #03244E;
+      color: white;
+      border: none;
+      padding: 0.6rem 1rem;
+      cursor: pointer;
+      font-family: 'IBM Plex Mono', monospace;
+      border-radius: 5px;
+    }
+    input[type="file"] {
+      display: none;
+    }
+    #previewToggle {
+      margin-top: 1rem;
+    }
+    .grid, .mobile-preview {
+      max-width: 1080px;
+      margin: auto;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-gap: 10px;
+    }
+    .cell {
+      width: 100%;
+      padding-top: 125%;
+      position: relative;
+      background: #ddd;
+      border: 2px dashed #bbb;
+    }
+    .cell img {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+    .replace-btn {
+      position: absolute;
+      bottom: 4px; right: 4px;
+      background: rgba(0,0,0,0.6);
+      color: white;
+      font-size: 0.7rem;
+      border: none;
+      border-radius: 3px;
+      padding: 2px 6px;
+      cursor: pointer;
+    }
+    .mobile-preview {
+      display: none;
+      border: 2px solid #333;
+      border-radius: 20px;
+      padding: 1rem;
+      background: white;
+      width: 360px;
+    }
+    .mobile-preview img {
+      width: 100%;
+      aspect-ratio: 4/5;
+      object-fit: cover;
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>Pedriño</h1>
+
+  <div class="controls">
+    <label><input id="fileInput" type="file" accept="image/*" multiple><span>📸 Ajouter des images</span></label>
+    <button onclick="exportLayout()">💾 Exporter le layout</button>
+    <label><input id="importInput" type="file" accept="application/json"><span>📥 Importer un layout</span></label>
+    <button id="previewToggle" onclick="togglePreview()">📱 Aperçu mobile</button>
+  </div>
+
+  <div id="grid" class="grid"></div>
+  <div id="mobilePreview" class="mobile-preview"></div>
+
+  <script>
+    const grid = document.getElementById('grid');
+    const mobile = document.getElementById('mobilePreview');
+    const fileInput = document.getElementById('fileInput');
+    const importInput = document.getElementById('importInput');
+    let images = new Array(9).fill(null);
+
+    fileInput.addEventListener('change', (e) => {
+      const files = Array.from(e.target.files);
+      files.slice(0, 9 - images.filter(Boolean).length).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const idx = images.indexOf(null);
+          if (idx !== -1) {
+            images[idx] = reader.result;
+            render();
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+
+    importInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        const layout = JSON.parse(reader.result);
+        images = layout.images || images;
+        render();
+      };
+      reader.readAsText(file);
+    });
+
+    function render() {
+      grid.innerHTML = '';
+      mobile.innerHTML = '';
+      images.forEach((src, i) => {
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        cell.setAttribute('draggable', true);
+        cell.dataset.index = i;
+
+        if (src) {
+          const img = document.createElement('img');
+          img.src = src;
+          cell.appendChild(img);
+
+          const btn = document.createElement('button');
+          btn.innerText = 'Remplacer';
+          btn.className = 'replace-btn';
+          btn.onclick = () => {
+            const tempInput = document.createElement('input');
+            tempInput.type = 'file';
+            tempInput.accept = 'image/*';
+            tempInput.onchange = (e) => {
+              const reader = new FileReader();
+              reader.onload = () => {
+                images[i] = reader.result;
+                render();
+              };
+              reader.readAsDataURL(e.target.files[0]);
+            };
+            tempInput.click();
+          };
+          cell.appendChild(btn);
+
+          const mobileImg = document.createElement('img');
+          mobileImg.src = src;
+          mobile.appendChild(mobileImg);
+        }
+
+        cell.addEventListener('dragstart', dragStart);
+        cell.addEventListener('dragover', dragOver);
+        cell.addEventListener('drop', drop);
+        grid.appendChild(cell);
+      });
+    }
+
+    let dragIndex = null;
+    function dragStart(e) {
+      dragIndex = +e.target.dataset.index;
+    }
+    function dragOver(e) {
+      e.preventDefault();
+    }
+    function drop(e) {
+      const dropIndex = +e.target.dataset.index;
+      const temp = images[dragIndex];
+      images[dragIndex] = images[dropIndex];
+      images[dropIndex] = temp;
+      render();
+    }
+
+    function togglePreview() {
+      mobile.style.display = mobile.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function exportLayout() {
+      const zip = new JSZip();
+      const layout = { images: [] };
+      images.forEach((img, i) => {
+        if (img) {
+          const base64 = img.split(',')[1];
+          zip.file(`${i + 1}.jpg`, base64, { base64: true });
+          layout.images.push(img);
+        } else {
+          layout.images.push(null);
+        }
+      });
+      zip.file('layout.json', JSON.stringify(layout, null, 2));
+      zip.file('README.txt', `PEDRIÑO – Feed preview tool\n\n1. Pour réimporter : utilisez le bouton "Importer un layout".\n2. layout.json contient l'ordre des images.\n3. Les images sont nommées de 1 à 9.`);
+
+      zip.generateAsync({ type: 'blob' }).then(content => {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(content);
+        a.download = 'pedrino_feed_layout.zip';
+        a.click();
+      });
+    }
+
+    render();
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+</body>
+</html>
