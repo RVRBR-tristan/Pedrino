@@ -223,6 +223,12 @@ label.export-btn input {
 </head>
 <body>
   
+  
+  </div>
+
+  <input id="fileInput" type="file" accept="image/*" multiple style="display: none;">
+
+
   <div class="header">
     <div>
       <h1>Pedriño</h1>
@@ -230,6 +236,10 @@ label.export-btn input {
     </div>
   </div>
 
+  <div class="controls">
+    <button id="addImagesBtn" class="export-btn"><span class="material-symbols-outlined">image</span> Ajouter des images</button>
+    <button onclick="exportGrid()" class="export-btn"><span class="material-symbols-outlined">download</span> Exporter le layout</button>
+  </div>
   <input id="fileInput" type="file" accept="image/*" multiple style="display: none;">
 
 <div id="grid" class="grid"></div>
