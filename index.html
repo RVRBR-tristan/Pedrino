@@ -1,1 +1,228 @@
-<!DOCTYPE html><html><head><title>Pedriño mobile export</title></head><body>V1 placeholder</body></html>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pedriño – Export PNG Grid</title>
+  <link rel="icon" href="favicon.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&family=IBM+Plex+Sans:ital,wght@0,500;1,300&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #42B4AD;
+      --primary-hover: #2e8b85;
+      --surface: #ffffff;
+      --text: #03244E;
+      --text-muted: rgba(3, 36, 78, 0.75);
+      --grid-gap: 3px;
+      --radius: 8px;
+    }
+    body {
+      margin: 0;
+      font-family: 'IBM Plex Sans', sans-serif;
+      background-color: var(--surface);
+      color: var(--text);
+      padding: 2rem 1rem;
+    }
+    h1 {
+      color: var(--primary);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 34px;
+      font-weight: 300;
+      margin: 0;
+    }
+    h2 {
+      font-size: 19.35px;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin: 0.5rem 0 1rem;
+    }
+    .header {
+      max-width: 1080px;
+      margin: 0 auto 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+    }
+    .controls {
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-end;
+      flex-wrap: wrap;
+    }
+    button, label span {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      height: 40px;
+      cursor: pointer;
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      border-radius: var(--radius);
+      transition: background-color 0.25s ease-in-out;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    button:hover, label span:hover {
+      background-color: var(--primary-hover);
+    }
+    .material-symbols-outlined {
+      font-size: 20px;
+      padding: 0;
+      background: none !important;
+    }
+    input[type="file"] {
+      display: none;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--grid-gap);
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+    .cell {
+      width: 100%;
+      aspect-ratio: 4/5;
+      background: rgba(3, 36, 78, 0.05);
+      border-radius: var(--radius);
+      overflow: hidden;
+      position: relative;
+    }
+    .cell img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: var(--radius);
+    }
+    .replace-btn {
+      position: absolute;
+      bottom: 6px;
+      right: 6px;
+      background: rgba(3, 36, 78, 0.6);
+      color: white;
+      font-size: 11px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-weight: 500;
+      padding: 4px 10px;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div>
+      <h1>Pedriño</h1>
+      <h2>Salut ! je t'aide à prévisualiser ton feed Insta ^^</h2>
+    </div>
+    <div class="controls">
+      <label><input id="fileInput" type="file" accept="image/*" multiple><span><span class="material-symbols-outlined">image</span>Ajouter des images</span></label>
+      <button onclick="exportGrid()">Exporter le layout</button>
+    </div>
+  </div>
+
+  <div id="grid" class="grid"></div>
+  <canvas id="canvas" style="display:none;"></canvas>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+  <script>
+    const grid = document.getElementById('grid');
+    const fileInput = document.getElementById('fileInput');
+    let images = new Array(9).fill(null);
+
+    function render() {
+      grid.innerHTML = '';
+      images.forEach((src, i) => {
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        cell.dataset.index = i;
+        if (src) {
+          const img = document.createElement('img');
+          img.src = src;
+          cell.appendChild(img);
+          const btn = document.createElement('button');
+          btn.className = 'replace-btn';
+          btn.innerText = 'Remplacer';
+          btn.onclick = () => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = (e) => {
+              const reader = new FileReader();
+              reader.onload = () => {
+                images[i] = reader.result;
+                render();
+              };
+              reader.readAsDataURL(e.target.files[0]);
+            };
+            input.click();
+          };
+          cell.appendChild(btn);
+        }
+        grid.appendChild(cell);
+      });
+
+      Sortable.create(grid, {
+        animation: 150,
+        onEnd: (evt) => {
+          const [moved] = images.splice(evt.oldIndex, 1);
+          images.splice(evt.newIndex, 0, moved);
+          render();
+        }
+      });
+    }
+
+    function exportGrid() {
+      const canvas = document.getElementById('canvas');
+      const ctx = canvas.getContext('2d');
+      const w = 1080, h = 1350;
+      canvas.width = 3 * w;
+      canvas.height = 3 * h;
+
+      const loadImages = images.map((src, i) => new Promise((resolve) => {
+        if (!src) return resolve();
+        const img = new Image();
+        img.onload = () => {
+          const x = (i % 3) * w;
+          const y = Math.floor(i / 3) * h;
+          ctx.drawImage(img, x, y, w, h);
+          resolve();
+        };
+        img.src = src;
+      }));
+
+      Promise.all(loadImages).then(() => {
+        canvas.toBlob(blob => {
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = 'mon_feed.png';
+          a.click();
+        });
+      });
+    }
+
+    fileInput.addEventListener('change', (e) => {
+      const files = Array.from(e.target.files);
+      files.slice(0, 9 - images.filter(Boolean).length).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const idx = images.indexOf(null);
+          if (idx !== -1) {
+            images[idx] = reader.result;
+            render();
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+
+    render();
+  </script>
+</body>
+</html>
