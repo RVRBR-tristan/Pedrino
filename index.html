@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pedriño – Ton assistant de feed</title>
-  <link rel="icon" href="favicon.png" />
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&family=IBM+Plex+Sans:ital,wght@0,500;1,300&display=swap" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
   <style>
+    * { box-sizing: border-box; }
     body {
       margin: 0;
       font-family: 'IBM Plex Sans', sans-serif;
-      background: white;
+      background-color: #fff;
       color: #03244E;
       padding: 3rem 2rem;
     }
@@ -31,7 +32,7 @@
     }
     .header {
       max-width: 1080px;
-      margin: auto;
+      margin: 0 auto 1rem;
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
@@ -40,24 +41,30 @@
     .controls {
       display: flex;
       gap: 0.75rem;
+      align-items: center;
     }
     button, label span {
       background: #42B4AD;
       color: white;
-      padding: 0.5rem 1rem;
       border: none;
+      padding: 0.5rem 1rem;
       cursor: pointer;
-      font-size: 15px;
       font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 15px;
       font-weight: 500;
       border-radius: 5px;
+      transition: background 0.25s ease-in-out;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .material-symbols-outlined {
+      font-size: 18px;
     }
     button:hover, label span:hover {
       background: #2e8b85;
     }
-    input[type=file] {
-      display: none;
-    }
+    input[type="file"] { display: none; }
     .grid {
       max-width: 1080px;
       margin: auto;
@@ -68,7 +75,7 @@
     .cell {
       width: 100%;
       aspect-ratio: 4/5;
-      background: rgba(3,36,78,0.05);
+      background: rgba(3, 36, 78, 0.05);
       border-radius: 3px;
       position: relative;
     }
@@ -80,10 +87,9 @@
     }
     .replace-btn {
       position: absolute;
-      bottom: 5px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(3,36,78,0.5);
+      bottom: 4px;
+      right: 4px;
+      background: rgba(3, 36, 78, 0.6);
       color: white;
       font-size: 11.5px;
       font-family: 'IBM Plex Mono', monospace;
@@ -92,9 +98,10 @@
       border-radius: 3.82px;
       border: none;
       cursor: pointer;
+      transition: background 0.25s ease-in-out;
     }
     .replace-btn:hover {
-      background: rgba(3,36,78,0.8);
+      background: rgba(3, 36, 78, 0.8);
     }
   </style>
 </head>
@@ -105,16 +112,16 @@
       <h2>Ton assistant de feed</h2>
     </div>
     <div class="controls">
-      <label><input id="fileInput" type="file" accept="image/*" multiple><span>Ajouter des images</span></label>
-      <button onclick="exportLayout()">Exporter le layout</button>
-      <label><input id="importInput" type="file" accept="application/json"><span>Importer un layout</span></label>
+      <label><input id="fileInput" type="file" accept="image/*" multiple><span><span class="material-symbols-outlined">upload</span>Ajouter des images</span></label>
+      <button onclick="exportLayout()"><span class="material-symbols-outlined">download</span>Exporter le layout</button>
     </div>
   </div>
   <div id="grid" class="grid"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
   <script>
     const grid = document.getElementById('grid');
     const fileInput = document.getElementById('fileInput');
-    const importInput = document.getElementById('importInput');
     let images = new Array(9).fill(null);
 
     function render() {
@@ -180,17 +187,6 @@
       });
     });
 
-    importInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      const reader = new FileReader();
-      reader.onload = () => {
-        const layout = JSON.parse(reader.result);
-        images = layout.images || images;
-        render();
-      };
-      reader.readAsText(file);
-    });
-
     function exportLayout() {
       const zip = new JSZip();
       const layout = { images };
@@ -201,7 +197,7 @@
         }
       });
       zip.file('layout.json', JSON.stringify(layout, null, 2));
-      zip.file('README.txt', 'PEDRIÑO – Feed preview tool\n\n1. Utilisez "Importer un layout" pour recharger.\n2. layout.json contient l’ordre des images.\n3. Les images sont nommées de 1 à 9.');
+      zip.file('README.txt', 'PEDRIÑO – Feed preview tool\n\n1. Utilisez "Exporter le layout" pour sauvegarder.\n2. layout.json contient l’ordre des images.\n3. Les images sont nommées de 1 à 9.');
       zip.generateAsync({ type: 'blob' }).then(blob => {
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
