@@ -70,16 +70,17 @@
       align-items: center;
       gap: 0.4rem;
     }
-    button:hover, label span:hover {
-      background-color: var(--primary-hover);
-    }
     .material-symbols-outlined {
       font-size: 20px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      height: 100%;
+      height: auto;
+      padding: 0;
       background: none !important;
+    }
+    button:hover, label span:hover {
+      background-color: var(--primary-hover);
     }
     input[type="file"] {
       display: none;
@@ -137,7 +138,6 @@
     </div>
   </div>
   <div id="grid" class="grid"></div>
-
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
   <script>
     const grid = document.getElementById('grid');
