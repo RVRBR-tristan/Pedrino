@@ -138,6 +138,33 @@
     .cell.drag-ghost {
       opacity: 0.5;
     }
+
+    .cell {
+      cursor: grab;
+      transition: box-shadow 0.2s ease;
+    }
+    .cell:active {
+      cursor: grabbing;
+    }
+    .drag-ghost {
+      opacity: 0.6;
+      box-shadow: 0px 8px 18px rgba(0, 0, 0, 0.15);
+      transform: scale(1.02);
+      z-index: 10;
+    }
+
+    .cell {
+      cursor: grab;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .cell:active {
+      cursor: grabbing;
+    }
+    .cell.drag-ghost {
+      opacity: 0.5;
+      transform: scale(1.03);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
 </style>
 </head>
 <body>
