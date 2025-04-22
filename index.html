@@ -23,7 +23,7 @@
       font-family: 'IBM Plex Sans', sans-serif;
       background-color: var(--surface);
       color: var(--text);
-      padding: 3rem 2rem;
+      padding: 2rem 1rem;
     }
     h1 {
       color: var(--primary);
@@ -75,7 +75,6 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      height: auto;
       padding: 0;
       background: none !important;
     }
@@ -86,15 +85,16 @@
       display: none;
     }
     .grid {
+      width: 100%;
       max-width: 1080px;
-      margin: auto;
+      margin: 0 auto;
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: var(--grid-gap);
     }
     .cell {
       width: 100%;
-      aspect-ratio: 4/5;
+      aspect-ratio: 4 / 5;
       background: rgba(3, 36, 78, 0.05);
       border-radius: var(--radius);
       position: relative;
@@ -123,6 +123,22 @@
     }
     .replace-btn:hover {
       background: rgba(3, 36, 78, 0.85);
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 1rem 0.5rem;
+      }
+      h1 {
+        font-size: 28px;
+      }
+      h2 {
+        font-size: 16px;
+      }
+      .controls {
+        flex-wrap: wrap;
+        justify-content: flex-start;
+      }
     }
   </style>
 </head>
