@@ -149,6 +149,27 @@
       vertical-align: middle;
     }
 
+
+.upload-btn, .export-btn {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  padding: 0.5rem 1rem;
+  font-size: 15px;
+  font-weight: 500;
+  border-radius: 8px;
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  cursor: pointer;
+  gap: 0.5rem;
+  transition: background-color 0.25s ease-in-out;
+}
+.upload-btn:hover, .export-btn:hover {
+  background-color: var(--primary-hover);
+}
+
 </style>
 </head>
 <body>
@@ -158,8 +179,8 @@
       <h2>Salut ! je t'aide à prévisualiser ton feed Insta ^^</h2>
     </div>
     <div class="controls">
-      <label><input id="fileInput" type="file" accept="image/*" multiple><span style="display:inline-flex; align-items:center;"><span class="material-symbols-outlined">image</span><span class="material-symbols-outlined">image</span>Ajouter des images</span></label>
-      <button onclick="exportGrid()"><span class="material-symbols-outlined">download</span>Exporter le layout</button>
+      <label><input id="fileInput" type="file" accept="image/*" multiple><span style="display:inline-flex; align-items:center;"><span class="material-symbols-outlined">image</span>Ajouter des images</span></label>
+      <button onclick="exportGrid()" class="export-btn"><span class="material-symbols-outlined">download</span> Exporter le layout</button>
     </div>
   </div>
 
