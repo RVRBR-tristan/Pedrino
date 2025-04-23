@@ -240,6 +240,25 @@ label.export-btn input {
       background-color: rgba(3, 36, 78, 0.85);
     }
 
+
+    .crop-btn {
+      position: absolute;
+      bottom: 6px;
+      right: 90px;
+      background: rgba(3, 36, 78, 0.6);
+      color: white;
+      font-size: 14px;
+      font-family: 'IBM Plex Mono', monospace;
+      padding: 4px 8px;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.2s ease-in-out;
+    }
+    .crop-btn:hover {
+      background-color: rgba(3, 36, 78, 0.85);
+    }
+
 </style>
 </head>
 <body>
@@ -274,6 +293,8 @@ label.export-btn input {
     const grid = document.getElementById('grid');
     const fileInput = document.getElementById('fileInput');
     let images = new Array(9).fill(null);
+let cropOffsetsX = new Array(9).fill(0);
+let cropOffsetsY = new Array(9).fill(0);
 
     function render() {
       grid.innerHTML = '';
@@ -320,7 +341,38 @@ document.getElementById('addImagesBtn').addEventListener('click', () => {
             };
             input.click();
           };
-          cell.appendChild(btn);
+          
+          const cropBtn = document.createElement('button');
+          cropBtn.className = 'crop-btn';
+          cropBtn.innerHTML = '<span class="material-symbols-outlined">crop</span>';
+          cropBtn.onclick = () => {
+            cropOffsets[i] = ((cropOffsets[i] || 0) + 0.1) % 1.0;
+            render();
+          };
+          cell.appendChild(cropBtn);
+
+        
+          const cropBtnY = document.createElement('button');
+          cropBtnY.className = 'crop-btn';
+          cropBtnY.style.right = '90px';
+          cropBtnY.innerHTML = '<span class="material-symbols-outlined">crop_portrait</span>';
+          cropBtnY.onclick = () => {
+            cropOffsetsY[i] = ((cropOffsetsY[i] || 0) + 0.1) % 1.0;
+            render();
+          };
+          cell.appendChild(cropBtnY);
+
+          const cropBtnX = document.createElement('button');
+          cropBtnX.className = 'crop-btn';
+          cropBtnX.style.right = '130px';
+          cropBtnX.innerHTML = '<span class="material-symbols-outlined">crop_landscape</span>';
+          cropBtnX.onclick = () => {
+            cropOffsetsX[i] = ((cropOffsetsX[i] || 0) + 0.1) % 1.0;
+            render();
+          };
+          cell.appendChild(cropBtnX);
+
+        cell.appendChild(btn);
         }
         grid.appendChild(cell);
       });
@@ -365,25 +417,22 @@ document.getElementById('addImagesBtn').addEventListener('click', () => {
         const img = new Image();
         
         img.onload = () => {
-          const x = (i % 3) * w;
-          const y = Math.floor(i / 3) * h;
-
-          // Empêcher les déformations : crop centré si ratio différent
+          const offsetX = cropOffsetsX[i] || 0;
+          const offsetY = cropOffsetsY[i] || 0;
           const imgRatio = img.width / img.height;
           const cellRatio = w / h;
 
           let sx = 0, sy = 0, sw = img.width, sh = img.height;
           if (imgRatio > cellRatio) {
             sw = img.height * cellRatio;
-            sx = (img.width - sw) / 2;
+            sx = (img.width - sw) * offsetX;
           } else {
             sh = img.width / cellRatio;
-            sy = (img.height - sh) / 2;
+            sy = (img.height - sh) * offsetY;
           }
 
           ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
-          resolve();
-        };
+resolve();};
 
         img.src = src;
       }));
