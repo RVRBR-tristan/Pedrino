@@ -240,47 +240,6 @@ label.export-btn input {
       background-color: rgba(3, 36, 78, 0.85);
     }
 
-
-    .crop-btn {
-      position: absolute;
-      bottom: 6px;
-      right: 90px;
-      background: rgba(3, 36, 78, 0.6);
-      color: white;
-      font-size: 14px;
-      font-family: 'IBM Plex Mono', monospace;
-      padding: 4px 8px;
-      border-radius: 4px;
-      border: none;
-      cursor: pointer;
-      transition: background-color 0.2s ease-in-out;
-    }
-    .crop-btn:hover {
-      background-color: rgba(3, 36, 78, 0.85);
-    }
-
-
-    .crop-btn {
-      position: absolute;
-      bottom: 6px;
-      left: 6px;
-      background: rgba(3, 36, 78, 0.6);
-      color: white;
-      font-size: 14px;
-      font-family: 'IBM Plex Mono', monospace;
-      padding: 4px 8px;
-      border-radius: 4px;
-      border: none;
-      cursor: pointer;
-      transition: background-color 0.2s ease-in-out;
-    }
-    .crop-btn:hover {
-      background-color: rgba(3, 36, 78, 0.85);
-    }
-    .cropping img {
-      cursor: grab;
-    }
-
 </style>
 </head>
 <body>
@@ -315,9 +274,6 @@ label.export-btn input {
     const grid = document.getElementById('grid');
     const fileInput = document.getElementById('fileInput');
     let images = new Array(9).fill(null);
-let cropOffsets = new Array(9).fill({ x: 0, y: 0 });
-
-
 
     function render() {
       grid.innerHTML = '';
@@ -326,14 +282,9 @@ let cropOffsets = new Array(9).fill({ x: 0, y: 0 });
         cell.className = 'cell';
         cell.dataset.index = i;
         if (src) {
-          
-        const img = document.createElement('img');
-        img.src = src;
-        const offset = cropOffsets[i] || { x: 0, y: 0 };
-        img.style.transform = `translate(${offset.x * 100}%, ${offset.y * 100}%)`;
-        img.style.transition = 'transform 0.1s ease-out';
-        cell.appendChild(img);
-    
+          const img = document.createElement('img');
+          img.src = src;
+          cell.appendChild(img);
           const btn = document.createElement('button');
           btn.className = 'replace-btn';
           btn.innerText = 'Remplacer';
@@ -346,37 +297,6 @@ let cropOffsets = new Array(9).fill({ x: 0, y: 0 });
               reader.onload = () => {
                 images[i] = reader.result;
                 render();
-
-let isDragging = false;
-let dragStart = { x: 0, y: 0 };
-let currentCell = null;
-let currentIndex = null;
-
-grid.addEventListener('mousedown', (e) => {
-  if (!e.target.closest('.cropping img')) return;
-  isDragging = true;
-  currentCell = e.target.closest('.cell');
-  currentIndex = parseInt(currentCell.dataset.index);
-  dragStart = { x: e.clientX, y: e.clientY };
-});
-
-window.addEventListener('mousemove', (e) => {
-  if (!isDragging || currentIndex === null) return;
-  const dx = e.clientX - dragStart.x;
-  const dy = e.clientY - dragStart.y;
-  dragStart = { x: e.clientX, y: e.clientY };
-  const scale = 0.005;
-  cropOffsets[currentIndex].x += dx * scale;
-  cropOffsets[currentIndex].y += dy * scale;
-  render();
-});
-
-window.addEventListener('mouseup', () => {
-  isDragging = false;
-  currentCell = null;
-  currentIndex = null;
-});
-
 
 document.getElementById('addImagesBtn').addEventListener('click', () => {
   document.getElementById('fileInput').click();
@@ -400,62 +320,7 @@ document.getElementById('addImagesBtn').addEventListener('click', () => {
             };
             input.click();
           };
-          
-          const cropBtn = document.createElement('button');
-          cropBtn.className = 'crop-btn';
-          cropBtn.innerHTML = '<span class="material-symbols-outlined">crop</span>';
-          cropBtn.onclick = () => {
-            cropOffsets[i] = ((cropOffsets[i] || 0) + 0.1) % 1.0;
-            render();
-
-let isDragging = false;
-let dragStart = { x: 0, y: 0 };
-let currentCell = null;
-let currentIndex = null;
-
-grid.addEventListener('mousedown', (e) => {
-  if (!e.target.closest('.cropping img')) return;
-  isDragging = true;
-  currentCell = e.target.closest('.cell');
-  currentIndex = parseInt(currentCell.dataset.index);
-  dragStart = { x: e.clientX, y: e.clientY };
-});
-
-window.addEventListener('mousemove', (e) => {
-  if (!isDragging || currentIndex === null) return;
-  const dx = e.clientX - dragStart.x;
-  const dy = e.clientY - dragStart.y;
-  dragStart = { x: e.clientX, y: e.clientY };
-  const scale = 0.005;
-  cropOffsets[currentIndex].x += dx * scale;
-  cropOffsets[currentIndex].y += dy * scale;
-  render();
-});
-
-window.addEventListener('mouseup', () => {
-  isDragging = false;
-  currentCell = null;
-  currentIndex = null;
-});
-
-          };
-          cell.appendChild(cropBtn);
-
-        
-          
-
-          
-
-        
-          const cropBtn = document.createElement('button');
-          cropBtn.className = 'crop-btn';
-          cropBtn.innerHTML = '<span class="material-symbols-outlined">crop</span>';
-          cropBtn.onclick = () => {
-            cell.classList.toggle('cropping');
-          };
-          cell.appendChild(cropBtn);
-
-        cell.appendChild(btn);
+          cell.appendChild(btn);
         }
         grid.appendChild(cell);
       });
@@ -466,37 +331,6 @@ window.addEventListener('mouseup', () => {
           const [moved] = images.splice(evt.oldIndex, 1);
           images.splice(evt.newIndex, 0, moved);
           render();
-
-let isDragging = false;
-let dragStart = { x: 0, y: 0 };
-let currentCell = null;
-let currentIndex = null;
-
-grid.addEventListener('mousedown', (e) => {
-  if (!e.target.closest('.cropping img')) return;
-  isDragging = true;
-  currentCell = e.target.closest('.cell');
-  currentIndex = parseInt(currentCell.dataset.index);
-  dragStart = { x: e.clientX, y: e.clientY };
-});
-
-window.addEventListener('mousemove', (e) => {
-  if (!isDragging || currentIndex === null) return;
-  const dx = e.clientX - dragStart.x;
-  const dy = e.clientY - dragStart.y;
-  dragStart = { x: e.clientX, y: e.clientY };
-  const scale = 0.005;
-  cropOffsets[currentIndex].x += dx * scale;
-  cropOffsets[currentIndex].y += dy * scale;
-  render();
-});
-
-window.addEventListener('mouseup', () => {
-  isDragging = false;
-  currentCell = null;
-  currentIndex = null;
-});
-
 
 document.getElementById('addImagesBtn').addEventListener('click', () => {
   document.getElementById('fileInput').click();
@@ -531,19 +365,25 @@ document.getElementById('addImagesBtn').addEventListener('click', () => {
         const img = new Image();
         
         img.onload = () => {
-          const offset = cropOffsets[i] || { x: 0, y: 0 };
+          const x = (i % 3) * w;
+          const y = Math.floor(i / 3) * h;
+
+          // Empêcher les déformations : crop centré si ratio différent
           const imgRatio = img.width / img.height;
           const cellRatio = w / h;
+
           let sx = 0, sy = 0, sw = img.width, sh = img.height;
           if (imgRatio > cellRatio) {
             sw = img.height * cellRatio;
-            sx = (img.width - sw) / 2 + offset.x * (img.width - sw);
+            sx = (img.width - sw) / 2;
           } else {
             sh = img.width / cellRatio;
-            sy = (img.height - sh) / 2 + offset.y * (img.height - sh);
+            sy = (img.height - sh) / 2;
           }
+
           ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
-resolve();};
+          resolve();
+        };
 
         img.src = src;
       }));
@@ -567,37 +407,6 @@ resolve();};
           if (idx !== -1) {
             images[idx] = reader.result;
             render();
-
-let isDragging = false;
-let dragStart = { x: 0, y: 0 };
-let currentCell = null;
-let currentIndex = null;
-
-grid.addEventListener('mousedown', (e) => {
-  if (!e.target.closest('.cropping img')) return;
-  isDragging = true;
-  currentCell = e.target.closest('.cell');
-  currentIndex = parseInt(currentCell.dataset.index);
-  dragStart = { x: e.clientX, y: e.clientY };
-});
-
-window.addEventListener('mousemove', (e) => {
-  if (!isDragging || currentIndex === null) return;
-  const dx = e.clientX - dragStart.x;
-  const dy = e.clientY - dragStart.y;
-  dragStart = { x: e.clientX, y: e.clientY };
-  const scale = 0.005;
-  cropOffsets[currentIndex].x += dx * scale;
-  cropOffsets[currentIndex].y += dy * scale;
-  render();
-});
-
-window.addEventListener('mouseup', () => {
-  isDragging = false;
-  currentCell = null;
-  currentIndex = null;
-});
-
 
 document.getElementById('addImagesBtn').addEventListener('click', () => {
   document.getElementById('fileInput').click();
@@ -623,37 +432,6 @@ document.getElementById('addImagesBtn').addEventListener('click', () => {
     });
 
     render();
-
-let isDragging = false;
-let dragStart = { x: 0, y: 0 };
-let currentCell = null;
-let currentIndex = null;
-
-grid.addEventListener('mousedown', (e) => {
-  if (!e.target.closest('.cropping img')) return;
-  isDragging = true;
-  currentCell = e.target.closest('.cell');
-  currentIndex = parseInt(currentCell.dataset.index);
-  dragStart = { x: e.clientX, y: e.clientY };
-});
-
-window.addEventListener('mousemove', (e) => {
-  if (!isDragging || currentIndex === null) return;
-  const dx = e.clientX - dragStart.x;
-  const dy = e.clientY - dragStart.y;
-  dragStart = { x: e.clientX, y: e.clientY };
-  const scale = 0.005;
-  cropOffsets[currentIndex].x += dx * scale;
-  cropOffsets[currentIndex].y += dy * scale;
-  render();
-});
-
-window.addEventListener('mouseup', () => {
-  isDragging = false;
-  currentCell = null;
-  currentIndex = null;
-});
-
 
 document.getElementById('addImagesBtn').addEventListener('click', () => {
   document.getElementById('fileInput').click();
