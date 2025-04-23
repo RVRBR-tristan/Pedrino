@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Pedriño</title>
+  <link rel="icon" href="favicon.png" type="image/png">
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans&family=IBM+Plex+Mono&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
   <style>
@@ -200,27 +201,42 @@
     });
 
     function exportGrid() {
-      const canvas = document.createElement('canvas');
-      const w = 1080 / 3, h = w * 1.25;
-      canvas.width = 1080;
-      canvas.height = h * 3;
-      const ctx = canvas.getContext('2d');
+  const canvas = document.createElement('canvas');
+  const w = 1080 / 3, h = w * 1.25;
+  canvas.width = 1080;
+  canvas.height = h * 3;
+  const ctx = canvas.getContext('2d');
 
-      const promises = images.map((src, i) => {
-        return new Promise((resolve) => {
-          if (!src) return resolve();
-          const img = new Image();
-          img.onload = () => {
-            const x = (i % 3) * w;
-            const y = Math.floor(i / 3) * h;
-            ctx.drawImage(img, 0, 0, img.width, img.height, x, y, w, h);
-            resolve();
-          };
-          img.src = src;
-        });
-      });
+  const promises = images.map((src, i) => {
+    return new Promise((resolve) => {
+      if (!src) return resolve();
+      const img = new Image();
+      img.onload = () => {
+        const x = (i % 3) * w;
+        const y = Math.floor(i / 3) * h;
 
-      Promise.all(promises).then(() => {
+        const imgRatio = img.width / img.height;
+        const cellRatio = w / h;
+        let sx = 0, sy = 0, sw = img.width, sh = img.height;
+
+        if (imgRatio > cellRatio) {
+          // Image trop large → crop horizontal
+          sw = img.height * cellRatio;
+          sx = (img.width - sw) / 2;
+        } else {
+          // Image trop haute → crop vertical
+          sh = img.width / cellRatio;
+          sy = (img.height - sh) / 2;
+        }
+
+        ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
+        resolve();
+      };
+      img.src = src;
+    });
+  });
+
+  Promise.all(promises).then(() => {
         const link = document.createElement('a');
         link.download = 'pedrino_export.png';
         link.href = canvas.toDataURL();
