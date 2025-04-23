@@ -219,6 +219,17 @@ label.export-btn input {
       vertical-align: middle;
     }
 
+
+    .container {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+    .grid-wrapper {
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+
 </style>
 </head>
 <body>
@@ -229,6 +240,7 @@ label.export-btn input {
   <input id="fileInput" type="file" accept="image/*" multiple style="display: none;">
 
 
+  <div class="container">
   <div class="header">
     <div>
       <h1>Pedriño</h1>
@@ -242,7 +254,9 @@ label.export-btn input {
   </div>
   <input id="fileInput" type="file" accept="image/*" multiple style="display: none;">
 
-<div id="grid" class="grid"></div>
+</div>
+  <div class="grid-wrapper">
+    <div id="grid" class="grid"></div>
   <canvas id="canvas" style="display:none;"></canvas>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
