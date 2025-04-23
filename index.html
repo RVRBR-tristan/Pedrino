@@ -310,20 +310,23 @@ label.export-btn input {
     }
 
     fileInput.addEventListener('change', (e) => {
-      const files = Array.from(e.target.files);
-      files.slice(0, 9 - images.filter(Boolean).length).forEach(file => {
-        const reader = new FileReader();
-        reader.onload = () => {
-          const idx = images.indexOf(null);
-          if (idx !== -1) {
-            images[idx] = reader.result;
-            render();
-          }
-        };
-        reader.readAsDataURL(file);
-      });
-      fileInput.value = "";
-    });
+  const files = Array.from(e.target.files);
+  const availableSlots = images.reduce((count, img) => count + (img === null), 0);
+
+  files.slice(0, availableSlots).forEach((file) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const idx = images.indexOf(null);
+      if (idx !== -1) {
+        images[idx] = reader.result;
+        render();
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+
+  fileInput.value = ""; // Reset input to allow reuploading same file
+});
 
     render();
 </script>
