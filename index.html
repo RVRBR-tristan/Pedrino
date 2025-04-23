@@ -235,6 +235,11 @@ label.export-btn input {
       margin-bottom: 1.5rem;
     }
 
+
+    .replace-btn:hover {
+      background-color: rgba(3, 36, 78, 0.85);
+    }
+
 </style>
 </head>
 <body>
@@ -358,12 +363,28 @@ document.getElementById('addImagesBtn').addEventListener('click', () => {
       const loadImages = images.map((src, i) => new Promise((resolve) => {
         if (!src) return resolve();
         const img = new Image();
+        
         img.onload = () => {
           const x = (i % 3) * w;
           const y = Math.floor(i / 3) * h;
-          ctx.drawImage(img, x, y, w, h);
+
+          // Empêcher les déformations : crop centré si ratio différent
+          const imgRatio = img.width / img.height;
+          const cellRatio = w / h;
+
+          let sx = 0, sy = 0, sw = img.width, sh = img.height;
+          if (imgRatio > cellRatio) {
+            sw = img.height * cellRatio;
+            sx = (img.width - sw) / 2;
+          } else {
+            sh = img.width / cellRatio;
+            sy = (img.height - sh) / 2;
+          }
+
+          ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
           resolve();
         };
+
         img.src = src;
       }));
 
