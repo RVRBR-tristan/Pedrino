@@ -285,6 +285,7 @@ label.export-btn input {
           const img = document.createElement('img');
           img.src = src;
           cell.appendChild(img);
+
           const btn = document.createElement('button');
           btn.className = 'replace-btn';
           btn.innerText = 'Remplacer';
@@ -297,26 +298,7 @@ label.export-btn input {
               reader.onload = () => {
                 images[i] = reader.result;
                 render();
-
-document.getElementById('addImagesBtn').addEventListener('click', () => {
-  document.getElementById('fileInput').click();
-});
-
-
-document.getElementById('addImagesBtn').addEventListener('click', () => {
-  document.getElementById('fileInput').click();
-});
-
-
-document.getElementById('addImagesBtn').addEventListener('click', () => {
-  document.getElementById('fileInput').click();
-});
-
-
-
-
               };
-        grid.appendChild(cell);
               reader.readAsDataURL(e.target.files[0]);
             };
             input.click();
@@ -325,119 +307,25 @@ document.getElementById('addImagesBtn').addEventListener('click', () => {
         }
         grid.appendChild(cell);
       });
-
-      Sortable.create(grid, {
-        animation: 150,
-        onEnd: (evt) => {
-          const [moved] = images.splice(evt.oldIndex, 1);
-          images.splice(evt.newIndex, 0, moved);
-          render();
-
-document.getElementById('addImagesBtn').addEventListener('click', () => {
-  document.getElementById('fileInput').click();
-});
-
-
-document.getElementById('addImagesBtn').addEventListener('click', () => {
-  document.getElementById('fileInput').click();
-});
-
-
-document.getElementById('addImagesBtn').addEventListener('click', () => {
-  document.getElementById('fileInput').click();
-});
-
-
-
-
-        }
-      });
     }
 
-    function exportGrid() {
-      const canvas = document.getElementById('canvas');
-      const ctx = canvas.getContext('2d');
-      const w = 1080, h = 1350;
-      canvas.width = 3 * w;
-      canvas.height = 3 * h;
-
-      const loadImages = images.map((src, i) => new Promise((resolve) => {
-        if (!src) return resolve();
-        const img = new Image();
-        
-        img.onload = () => {
-          const x = (i % 3) * w;
-          const y = Math.floor(i / 3) * h;
-
-          // Empêcher les déformations : crop centré si ratio différent
-          const imgRatio = img.width / img.height;
-          const cellRatio = w / h;
-
-          let sx = 0, sy = 0, sw = img.width, sh = img.height;
-          if (imgRatio > cellRatio) {
-            sw = img.height * cellRatio;
-            sx = (img.width - sw) / 2;
-          } else {
-            sh = img.width / cellRatio;
-            sy = (img.height - sh) / 2;
+    fileInput.addEventListener('change', (e) => {
+      const files = Array.from(e.target.files);
+      files.slice(0, 9 - images.filter(Boolean).length).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const idx = images.indexOf(null);
+          if (idx !== -1) {
+            images[idx] = reader.result;
+            render();
           }
-
-          ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
-          resolve();
         };
-
-        img.src = src;
-      }));
-
-      Promise.all(loadImages).then(() => {
-        canvas.toBlob(blob => {
-          const a = document.createElement('a');
-          a.href = URL.createObjectURL(blob);
-          a.download = 'mon_feed.png';
-          a.click();
-        });
+        reader.readAsDataURL(file);
       });
-    }
-
-    
-fileInput.addEventListener('change', (e) => {
-  const files = Array.from(e.target.files);
-  files.slice(0, 9 - images.filter(Boolean).length).forEach(file => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const idx = images.indexOf(null);
-      if (idx !== -1) {
-        images[idx] = reader.result;
-        cropOffsets[idx] = { x: 0, y: 0 };
-        render();
-      }
-    };
-    reader.readAsDataURL(file);
-  });
-  fileInput.value = "";
-});
-
+      fileInput.value = "";
     });
 
     render();
-
-document.getElementById('addImagesBtn').addEventListener('click', () => {
-  document.getElementById('fileInput').click();
-});
-
-
-document.getElementById('addImagesBtn').addEventListener('click', () => {
-  document.getElementById('fileInput').click();
-});
-
-
-document.getElementById('addImagesBtn').addEventListener('click', () => {
-  document.getElementById('fileInput').click();
-});
-
-
-
-
-  </script>
+</script>
 </body>
 </html>
